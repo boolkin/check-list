@@ -1,0 +1,373 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Чек-лист</title>
+	<link rel="stylesheet" href="style/main.css">
+	<link rel="icon" type="image/png" href="favicon.png" />
+	<style>
+
+	</style>
+</head>
+
+<body>
+
+	<div class="myButtonSet" onclick="document.getElementById('sliderCSS').classList.toggle('closed');">☰</div>
+
+	<div>
+
+		<div class="sliderCSS closed" id="sliderCSS" width="100%">
+			<table style="vertical-align: text-top;">
+				<tr>
+					<td>
+						Импортировать таблицу из текстового поля:</br>
+						<textarea id="csvdata" rows='4' cols='50'></textarea><br>
+						<center><input type='button' onclick='loadCSV()' class="myButton" value='Импортировать'></center><br>
+						Или загрузить из файла: </br>
+						<div>
+							<label for="fileToLoad" id="fileToLoadName" class="custom-file-upload">Выбрать CSV файл</label>
+							<input type="file" id="fileToLoad" onchange="uploadFile(this)">
+							<input type='button' onclick='loadFileAsText()' class="myButton" value='Загрузить'>
+						</div>
+					</td>
+					<td>
+						Введите ваше имя:  <input type="text" id="inputName" oninput="inputName()"><br>
+						<label for='greenCheck'><input type='checkbox' oninput='dontShowGreen()' id='greenCheck'>Не показывать зеленые строки</label><br><br>
+						Добавить дополнительные столбцы дата, чек, замечание? (если их нет)<br>
+						<input class="myButton" type='button' onclick='additionalColumns()' value='Добавить'><br><br>
+						Выбор готовой таблицы:<br>
+						<input type='button' class="myButton" onclick="readCSVFile('https://boolkin.github.io/check-list/entry.csv')" value='Входная секция'>
+					</td>
+				</tr>
+			</table>
+			<div id="colsSelectorBlock"></div>
+			<center><input type='button' class="myButton" onclick='exportToCSV(";")' value='Экспорт результирующей таблицы'></center>
+		</div>
+	</div>
+	<table id="resultTable" border="1" width ="100%" style="font-size:1.2em;"></table>
+	<div id="popupWind" style="display: none; font-size:1.2em;">
+		<div class = "myButtonSet" style = "z-index: 150;" onclick='document.getElementById("popupWind").style.display = "none"'>✖</div>
+		<div style="margin:2vh;text-align: center;">
+			<div id="itemInfo"></div><hr>
+		</div>
+			<table style="width:100%;text-align:center;">	
+				<tr>
+					<td>
+						Выбрать неисправность: <hr>
+					</td>
+					<td>
+						Или поставить что все "OK": <hr>
+					</td>
+				</tr>
+				<tr>
+					<td style = "text-align:left;vertical-align: top;">
+						<div class="myButton2" onclick='checkNotOK("Поврежден кабель или разъем")'><div class="myButtonNOK" type='button'>✘</div><span style="padding: 1vw;">Поврежден кабель или разъем</span></div><br>
+						<div class="myButton2" onclick='checkNotOK("Поврежден сам датчик")'><div class="myButtonNOK" type='button'>✘</div><span style="padding: 1vw;">Поврежден сам датчик</span></div><br>
+						<div class="myButton2" onclick='checkNotOK("Плохо закреплен/повреждено крепление")'><div class="myButtonNOK" type='button'>✘</div><span style="padding: 1vw;">Плохо закреплен/повреждено крепление</span></div><br>
+						<form onsubmit="checkNotOK(document.getElementById('noteText').value)">
+							<div class="myButton2"><div class="myButtonNOK" type='button'>✘</div>
+								<input type="text" id="noteText" size="27" style="font-size:1.2em;" placeholder="Cвое описание неисправности">
+							</div>
+						</form>
+					</td>
+					<td style="vertical-align: text-top;">						
+						<div class="myButtonOK" type='button' onclick='checkOK()'>✔</div><br><br>
+						Или вообще удалить отметку:<hr>
+						<input class="myButton" type='button' onclick='checkCancel()' value='Убрать отметку'>
+					</td>
+				</tr>
+		
+			</table>			
+		
+	</div>
+
+	<script>
+		
+		let cols = [];
+		let tableArray = [];
+		let tableBody = "";
+		let lineNumb;
+		let timeOptions = { 
+			year: 'numeric', 
+			month: 'numeric', 
+			day: 'numeric',
+			hour: 'numeric', 
+			minute: 'numeric', 
+			second: 'numeric' 
+		}
+		
+		let touchstartY = 0;
+		let touchendY = 0;
+
+		function handleGesture() {
+			if (touchendY + 120 < touchstartY) {
+				document.getElementById('sliderCSS').classList.add('closed');
+				document.getElementById("popupWind").style.display = "none";
+			}
+		}
+		document.getElementsByTagName("body")[0].addEventListener('touchstart', e => {
+			touchstartY = e.changedTouches[0].screenY;
+		});
+
+		document.getElementsByTagName("body")[0].addEventListener('touchend', e => {
+			touchendY = e.changedTouches[0].screenY;
+			handleGesture();
+		});
+		
+		if (localStorage.getItem('greenCheck') == "true") {
+			console.log ("greenCheck true");
+			document.getElementById('greenCheck').checked = true; 
+		}
+		if (localStorage.getItem('csvdata') !== null) {
+			let csvDataStorage = localStorage.getItem('csvdata');
+			csvToMyArray(csvDataStorage);
+		}
+		
+		document.getElementById("inputName").value = localStorage.getItem('YourName');
+		
+		if (localStorage.getItem('colsSelected') !== null) {
+			cols = JSON.parse(localStorage.getItem('colsSelected'));
+			for (let i=0;i<cols.length;i++) {
+				document.getElementById(cols[i]).checked = true; // отметить сразу те столбцы что были отмечены
+			}
+			tableGen();
+		}
+		
+		function loadCSV(){
+			let csvFromTextArea = document.getElementById('csvdata').value;
+			clearLocalStorage()
+			csvToMyArray(csvFromTextArea);
+			document.location.reload(true);
+		}
+		
+		function dontShowGreen() {
+			console.log("gree checked press")
+			if (localStorage.getItem('greenCheck') == "true") {
+				localStorage.setItem('greenCheck', "false");
+			}
+			else {
+				localStorage.setItem('greenCheck', "true");
+			}
+			tableGen();
+		}
+		//function from https://stackoverflow.com/questions/8493195/how-can-i-parse-a-csv-string-with-javascript-which-contains-comma-in-data
+		function csvToArray(text,sep) {
+			let p = '', row = [''], ret = [row], i = 0, r = 0, s = !0, l;
+			for (l of text) {
+				if ('"' === l) {
+					if (s && l === p) row[i] += l;
+					s = !s;
+				} else if (sep === l && s) l = row[++i] = '';
+				else if ('\n' === l && s) {
+					if ('\r' === p) row[i] = row[i].slice(0, -1);
+					row = ret[++r] = [l = '']; i = 0;
+				} else row[i] += l;
+				p = l;
+			}
+			return ret;
+		}
+		
+        function csvToMyArray(csv) {
+			localStorage.setItem('csvdata', csv);
+			let firstStart = false;
+			if (localStorage.getItem('tableArray') !== null) {
+				tableArray = JSON.parse(localStorage.getItem('tableArray'));
+				//console.log("other scan " + tableArray);
+				}
+			else {
+				tableArray = csvToArray(csv, ";");
+				//console.log("first scan " + tableArray);
+				if (tableArray[tableArray.length-1].length != tableArray[tableArray.length-2].length) tableArray.pop(); // удаляем пустую строку если такая есть
+				firstStart = true;
+			}
+			
+			let selectCols = "";
+			if (firstStart) {
+				//colsNumb = tableArray[0].length;
+				//if ()
+
+				localStorage.setItem('tableArray', JSON.stringify(tableArray));
+			}
+			// добавляем выбор колонок для генерации
+			for (let i=0;i<tableArray[0].length;i++) {
+				selectCols += "<label for='"+i+"'><input type='checkbox' oninput='colsAdd(this.id)' id='"+i+"'>  "+tableArray[0][i]+"  </label>";
+			}
+			document.getElementById('colsSelectorBlock').innerHTML = selectCols;
+        }
+		
+		function additionalColumns(){
+			if (tableArray[0][tableArray[0].length-1] ==="Замечание") return;
+			tableArray[0].push("Дата, Время"); // добавить возможность выбора столбца с датой в таблице
+			tableArray[0].push("Чек"); // добавление отметки
+			tableArray[0].push("Замечание") // добавление замечания
+			for (let i=1;i<tableArray.length;i++) {
+				tableArray[i].push("");
+				tableArray[i].push("☐");
+				tableArray[i].push("");
+			}
+			tableGen();
+			document.location.reload(true);
+		}
+		 
+		function colsAdd(id){
+			for (let i=0;i<cols.length;i++){
+				if (cols[i]==id) {
+					cols.splice(i,1);
+					localStorage.setItem('colsSelected', JSON.stringify(cols));
+					tableGen();
+					return;
+				}
+			}
+			cols.push(id);
+			localStorage.setItem('colsSelected', JSON.stringify(cols));
+			tableGen();		
+		}
+		
+		function tableGen() {
+			//console.log("table gen" + tableArray);
+			localStorage.setItem('tableArray', JSON.stringify(tableArray));
+			tableBody = "";
+			let colsNumb = tableArray[0].length - 3;
+			for (let i=0;i<tableArray.length;i++){
+				if (tableArray[i][colsNumb+2] === "OK") {
+					if (localStorage.getItem('greenCheck')=="true") continue;
+					tableBody += "<tr id='line"+i+"' onclick='check(this.id)' style='background-color:lightgreen;'>";
+				}
+				else if (tableArray[i][colsNumb+2] != "" && i != 0){
+					tableBody += "<tr id='line"+i+"' onclick='check(this.id)' style='background-color:pink;'>";
+				}
+				else {
+					tableBody += "<tr id='line"+i+"' onclick='check(this.id)'>";
+				}
+				for (let j=0;j<cols.length;j++){
+					if (i==0) tableBody += "<th>" + tableArray[i][cols[j]]+"</th>";
+					else tableBody += "<td>" + tableArray[i][cols[j]]+"</td>"
+				}
+				tableBody += "</tr>";
+			}
+			document.getElementById("resultTable").innerHTML = tableBody;
+		}
+		function check(id) {
+			
+			let check = document.getElementById(id).getElementsByTagName('div')[0];
+			lineNumb = parseInt(id.replace("line",""));
+			let itemInfo = "";
+			for (let i=0;i<cols.length;i++) {
+				itemInfo += " - " + tableArray[lineNumb][i];
+			}
+			document.getElementById("itemInfo").innerHTML = itemInfo;
+			document.getElementById("popupWind").style.display = "block";
+			document.getElementById('sliderCSS').classList.add('closed');
+		}
+		
+		function checkOK(){
+			let colsNumb = tableArray[0].length - 3;
+			let today = new Date();
+			today = today.toLocaleString("ru", timeOptions);
+			let name = localStorage.getItem('YourName');
+			tableArray[lineNumb][colsNumb] = today + " (" + name + ")";			
+			tableArray[lineNumb][colsNumb+1] = "✔"
+			tableArray[lineNumb][colsNumb+2] = "OK";
+			document.getElementById("popupWind").style.display = "none";
+			tableGen();
+		}
+		
+		function checkCancel(){
+			let colsNumb = tableArray[0].length - 3;
+			let today = new Date();
+			today = today.toLocaleString("ru", timeOptions);
+			tableArray[lineNumb][colsNumb] = "";			
+			tableArray[lineNumb][colsNumb+1] = "☐"
+			tableArray[lineNumb][colsNumb+2] = "";
+			document.getElementById("popupWind").style.display = "none";
+			tableGen();
+		}
+		
+		function checkNotOK(str){
+			let colsNumb = tableArray[0].length - 3;
+			let today = new Date();
+			today = today.toLocaleString("ru", timeOptions);
+			let name = localStorage.getItem('YourName');
+			tableArray[lineNumb][colsNumb] = today + " (" + name + ")";	
+			tableArray[lineNumb][colsNumb+1] = "✘"
+			tableArray[lineNumb][colsNumb+2] = str;
+			document.getElementById("popupWind").style.display = "none";
+			tableGen();
+		}
+		
+		function exportToCSV(sep){
+			let csvString = "";
+			let name = localStorage.getItem('YourName');
+			let today = new Date();
+			today = today.toLocaleString("ru", timeOptions);
+			for (let i=0;i<tableArray.length;i++) {
+				for (let j=0; j<tableArray[i].length;j++){
+					if (tableArray[i][j].indexOf(sep) !== -1) csvString += '"'+tableArray[i][j]+'"' + sep;
+					else csvString += tableArray[i][j] + sep;
+				}
+				csvString = csvString.slice(0, -1); //delete last semicolon
+				csvString += "%0D%0A";
+			}
+			var pom = document.createElement('a');
+         	pom.setAttribute('href', 'data:text/csv;charset=utf-8,' + (csvString));
+         	pom.setAttribute('download', today+'_('+name+')'+'.csv');
+         	if(document.createEvent) {
+         		var event = document.createEvent('MouseEvents');
+         		event.initEvent('click', true, true);
+         		pom.dispatchEvent(event);
+         	} else {
+         		pom.click();
+         	}
+		}
+		
+		//from https://stackoverflow.com/questions/14446447/how-to-read-a-local-text-file
+		function readCSVFile(file){
+			clearLocalStorage()
+			var rawFile = new XMLHttpRequest();
+			rawFile.open("GET", file, true);
+			rawFile.onreadystatechange = function ()
+			{
+				if(rawFile.readyState === 4)
+				{
+					if(rawFile.status === 200 || rawFile.status == 0)
+					{
+						var allText = rawFile.responseText;
+						csvToMyArray(allText);
+						document.location.reload(true);
+					}
+				}
+			}
+			rawFile.send(null);
+		}
+		
+		function clearLocalStorage(){
+			localStorage.removeItem('colsSelected');
+			localStorage.removeItem('csvdata');
+			localStorage.removeItem('tableArray');
+			localStorage.removeItem('greenCheck');
+		}
+		
+		function inputName(){
+			localStorage.setItem('YourName', document.getElementById("inputName").value); 
+		}
+		
+		function loadFileAsText(){
+		  let fileToLoad = document.getElementById("fileToLoad").files[0];
+		  
+		  let fileReader = new FileReader();
+			fileReader.onload = function(fileLoadedEvent){
+				let textFromFileLoaded = fileLoadedEvent.target.result;
+				clearLocalStorage();
+				csvToMyArray(textFromFileLoaded);
+				document.location.reload(true);
+			};
+			fileReader.readAsText(fileToLoad, "UTF-8");
+		}
+		
+		function uploadFile(name){
+			let fileName = (name.value).split("\\");
+			document.getElementById("fileToLoadName").innerHTML = fileName[fileName.length-1];
+		}
+	</script>
+</body>
+</html>
