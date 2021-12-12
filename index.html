@@ -40,7 +40,9 @@
 					</td>
 				</tr>
 			</table>
+			<hr>
 			<div id="colsSelectorBlock"></div>
+			<hr>
 			<center><input type='button' class="myButton" onclick='exportToCSV(";")' value='Экспорт результирующей таблицы'></center>
 		</div>
 	</div>
@@ -248,7 +250,7 @@
 			document.getElementById("resultTable").innerHTML = tableBody;
 		}
 		function check(id) {
-			
+			if (id ==="line0") return;
 			let check = document.getElementById(id).getElementsByTagName('div')[0];
 			lineNumb = parseInt(id.replace("line",""));
 			let itemInfo = "";
