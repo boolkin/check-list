@@ -1,0 +1,18 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "boolkin.github",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "boolkin.github",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "images/240x240.png",
+      "type": "image/png",
+      "sizes": "240x240"
+    }
+  ]
+}
