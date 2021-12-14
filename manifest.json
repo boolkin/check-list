@@ -1,12 +1,9 @@
 {
-  "background_color": "#ffffff",
   "display": "fullscreen",
   "name": "Чек-лист",
   "orientation": "any",
-  "scope": "/check-list/",
   "short_name": "check-list",
-  "start_url": "/check-list/",
-  "theme_color": "#ffffff",
+  "start_url": "./check-list/index.html",
   "icons": [
     {
       "src": "images/240x240.png",
