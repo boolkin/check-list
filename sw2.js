@@ -1,4 +1,4 @@
-const cacheName = 'pwa-display-test-v5';
+const cacheName = 'check-list';
 const contentToCache = [
   '/check-list/',
   '/check-list/index.html',
