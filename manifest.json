@@ -3,9 +3,9 @@
   "display": "fullscreen",
   "name": "Чек-лист",
   "orientation": "any",
-  "scope": "/check-list",
+  "scope": "/check-list/",
   "short_name": "check-list",
-  "start_url": "/check-list",
+  "start_url": "/check-list/",
   "theme_color": "#ffffff",
   "icons": [
     {
