@@ -2,10 +2,10 @@
   "background_color": "#ffffff",
   "dir": "ltr",
   "display": "standalone",
-  "name": "boolkin.github",
+  "name": "check-list",
   "orientation": "any",
   "scope": "/",
-  "short_name": "boolkin.github",
+  "short_name": "check-list",
   "start_url": "/",
   "theme_color": "#ffffff",
   "icons": [
