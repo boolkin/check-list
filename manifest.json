@@ -1,7 +1,7 @@
 {
   "background_color": "#ffffff",
   "display": "fullscreen",
-  "name": "check-list",
+  "name": "Чек-лист",
   "orientation": "any",
   "scope": "/check-list",
   "short_name": "check-list",

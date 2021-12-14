@@ -1,46 +1,47 @@
 'use strict';
-var VERSION = 'v2';
+const CACHE_STATIC = 'static-cache-v1';
 
-var cacheFiles = [
-/*  "https://cdnjs.cloudflare.com/ajax/libs/engine.io-client/3.2.1/engine.io.min.js",
+function hndlEventInstall(evt) {
+    /**
+     * @returns {Promise<void>}
+     */
+    async function cacheStaticFiles() {
+        const files = [
+            './',
+            './manifest.json',
+            './images/240x240.png',
+            './index.html',
+            './sw.js',
+        ];
+        const cacheStat = await caches.open(CACHE_STATIC);
+        await Promise.all(
+            files.map(function (url) {
+                return cacheStat.add(url).catch(function (reason) {
+                    console.log(`'${url}' failed: ${String(reason)}`);
+                });
+            })
+        );
+    }
 
-  self.registration.scope,
-  self.registration.scope+'js/util/canvas2d.js',
-  self.registration.scope+'js/runtime/runtime.js',
-  self.registration.scope+'js/runtime/screen.js',
-  self.registration.scope+'js/runtime/sprite.js',
-  self.registration.scope+'js/runtime/audio/audio.js',
-  self.registration.scope+'js/runtime/audio/beeper.js',
-  self.registration.scope+'js/play/player.js',
-  self.registration.scope+'js/play/playerclient.js',
-  self.registration.scope+'sw.js'*/
-];
+    //  wait until all static files will be cached
+    evt.waitUntil(cacheStaticFiles());
+}
 
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(VERSION).then(cache => {
-      return cache.addAll(cacheFiles);
-    })
-  );
-});
+function hndlEventFetch(evt) {
+    async function getFromCache() {
+        const cache = await self.caches.open(CACHE_STATIC);
+        const cachedResponse = await cache.match(evt.request);
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+        // wait until resource will be fetched from server and stored in cache
+        const resp = await fetch(evt.request);
+        await cache.put(evt.request, resp.clone());
+        return resp;
+    }
 
-self.addEventListener('fetch', function(event) {
-  //console.info(event.request);
-  if (event.request.method != "GET" || event.request.url.indexOf("/engine.io/")>0)
-  {
-    return event.respondWith(fetch(event.request)) ;
-  }
+    evt.respondWith(getFromCache());
+}
 
-  /* cache then network with caching */
-  event.respondWith(
-    caches.open(VERSION).then(function(cache) {
-      return cache.match(event.request).then(function(response) {
-        var fetchPromise = fetch(event.request).then(function(networkResponse) {
-          cache.put(event.request, networkResponse.clone());
-          return networkResponse;
-        })
-        return response || fetchPromise;
-      })
-    })
-  );
-});
+self.addEventListener('install', hndlEventInstall);
+self.addEventListener('fetch', hndlEventFetch);
