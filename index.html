@@ -10,14 +10,11 @@
 
 	</style>
 	<script>
-		if ("serviceWorker" in navigator) {
-			self.addEventListener("load", async () => {
-				const container = navigator.serviceWorker;
-				if (container.controller === null) {
-					const reg = await container.register("sw.js");
-				}
-			});
-		}
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("/check-list/sw.js", { scope: '/check-list/' });
+            });
+        }
 	</script>
 </head>
 
