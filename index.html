@@ -77,7 +77,7 @@
 						<div class="myButton2" onclick='checkNotOK("Поврежден кабель или разъем")'><div class="myButtonNOK" type='button'>✘</div><span style="padding: 1vw;">Поврежден кабель или разъем</span></div><br>
 						<div class="myButton2" onclick='checkNotOK("Поврежден сам датчик")'><div class="myButtonNOK" type='button'>✘</div><span style="padding: 1vw;">Поврежден сам датчик</span></div><br>
 						<div class="myButton2" onclick='checkNotOK("Плохо закреплен/повреждено крепление")'><div class="myButtonNOK" type='button'>✘</div><span style="padding: 1vw;">Плохо закреплен/повреждено крепление</span></div><br>
-						<form onsubmit="checkNotOK(document.getElementById('noteText').value)">
+						<form onsubmit="checkNotOK(document.getElementById('noteText').value)" method="POST">
 							<div class="myButton2"><div class="myButtonNOK" type='button'>✘</div>
 								<input type="text" id="noteText" size="27" style="font-size:1.2em;" placeholder="Cвое описание неисправности">
 							</div>
