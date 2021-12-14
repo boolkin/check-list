@@ -1,12 +1,11 @@
 {
   "background_color": "#ffffff",
-  "dir": "ltr",
   "display": "standalone",
   "name": "check-list",
   "orientation": "any",
-  "scope": "/",
+  "scope": "/check-list",
   "short_name": "check-list",
-  "start_url": "/",
+  "start_url": "/check-list",
   "theme_color": "#ffffff",
   "icons": [
     {
