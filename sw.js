@@ -1,11 +1,5 @@
 'use strict';
 const CACHE_STATIC = 'static-cache-v1';
-
-function hndlEventInstall(evt) {
-    /**
-     * @returns {Promise<void>}
-     */
-    async function cacheStaticFiles() {
         const files = [
             './',
             './manifest.json',
@@ -13,19 +7,7 @@ function hndlEventInstall(evt) {
             './index.html',
             './sw.js',
         ];
-        const cacheStat = await caches.open(CACHE_STATIC);
-        await Promise.all(
-            files.map(function (url) {
-                return cacheStat.add(url).catch(function (reason) {
-                    console.log(`'${url}' failed: ${String(reason)}`);
-                });
-            })
-        );
-    }
 
-    //  wait until all static files will be cached
-    evt.waitUntil(cacheStaticFiles());
-}
 
 function hndlEventFetch(evt) {
     async function getFromCache() {
@@ -43,5 +25,11 @@ function hndlEventFetch(evt) {
     evt.respondWith(getFromCache());
 }
 
-self.addEventListener('install', hndlEventInstall);
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_STATIC).then(cache => {
+      return cache.addAll(files);
+    })
+  );
+});
 self.addEventListener('fetch', hndlEventFetch);
