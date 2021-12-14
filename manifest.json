@@ -3,7 +3,7 @@
   "name": "Чек-лист",
   "orientation": "any",
   "short_name": "check-list",
-  "start_url": "./check-list/index.html",
+  "start_url": "./index.html",
   "icons": [
     {
       "src": "images/240x240.png",
