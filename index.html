@@ -393,6 +393,7 @@
 		function uploadFile(name) {
 			let fileName = (name.value).split("\\");
 			document.getElementById("fileToLoadName").innerHTML = fileName[fileName.length - 1];
+			loadFileAsText();
 		}
 	</script>
 </body>
