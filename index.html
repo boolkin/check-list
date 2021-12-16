@@ -219,6 +219,7 @@
 			// добавляем выбор колонок для генерации
 			for (let i = 0; i < tableArray[0].length; i++) {
 				selectCols += "<label for='" + i + "'><input type='checkbox' oninput='colsAdd(this.id)' id='" + i + "'>  " + tableArray[0][i] + "  </label>";
+				colsAdd(i);
 			}
 			document.getElementById('colsSelectorBlock').innerHTML = selectCols;
 		}
