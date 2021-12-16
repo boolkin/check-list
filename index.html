@@ -25,10 +25,8 @@
 
 	<div class="myButtonSet" onclick="document.getElementById('sliderCSS').classList.toggle('closed');">☰</div>
 
-	<div>
-
-		<div class="sliderCSS closed" id="sliderCSS" width="100%">
-			<table style="vertical-align: text-top;">
+	<div class="sliderCSS closed" id="sliderCSS" width="100%">
+			<table style="vertical-align: text-top; width:100%;">
 				<tr>
 					<td>
 						Импортировать таблицу из текстового поля:</br>
@@ -65,7 +63,6 @@
 					</td>
 				</tr>
 			</table>
-		</div>
 	</div>
 	<table id="resultTable" border="1" width="100%" style="font-size:1.2em;"></table>
 	<div id="popupWind" style="display: none; font-size:1.2em;">
@@ -163,8 +160,10 @@
 
 		document.getElementById("inputName").value = localStorage.getItem('YourName');
 
-		if (localStorage.getItem('colsSelected') !== null) {
+		if (localStorage.getItem('colsSelected') != null) {
+			console.log("Before" + cols);
 			cols = JSON.parse(localStorage.getItem('colsSelected'));
+			console.log("After" + cols);
 			for (let i = 0; i < cols.length; i++) {
 				document.getElementById(cols[i]).checked = true; // отметить сразу те столбцы что были отмечены
 			}
@@ -172,8 +171,8 @@
 		}
 
 		function loadCSV() {
+			clearLocalStorage();
 			let csvFromTextArea = document.getElementById('csvdata').value;
-			clearLocalStorage()
 			csvToMyArray(csvFromTextArea);
 			document.location.reload(true);
 		}
@@ -223,8 +222,12 @@
 			// добавляем выбор колонок для генерации
 			for (let i = 0; i < tableArray[0].length; i++) {
 				selectCols += "<label for='" + i + "'><input type='checkbox' oninput='colsAdd(this.id)' id='" + i + "'>  " + tableArray[0][i] + "  </label>";
-				if (firstStart) colsAdd(i);
+				if (firstStart) {
+					cols.push(i.toString());
+					localStorage.setItem('colsSelected', JSON.stringify(cols));
+				}
 			}
+
 			document.getElementById('colsSelectorBlock').innerHTML = selectCols;
 		}
 
@@ -244,7 +247,7 @@
 
 		function colsAdd(id) {
 			for (let i = 0; i < cols.length; i++) {
-				if (cols[i] == id) {
+				if (cols[i] === id) {
 					cols.splice(i, 1);
 					localStorage.setItem('colsSelected', JSON.stringify(cols));
 					tableGen();
@@ -357,13 +360,14 @@
 
 		//from https://stackoverflow.com/questions/14446447/how-to-read-a-local-text-file
 		function readCSVFile(file) {
-			clearLocalStorage()
+			clearLocalStorage();
 			var rawFile = new XMLHttpRequest();
 			rawFile.open("GET", file, true);
 			rawFile.onreadystatechange = function () {
 				if (rawFile.readyState === 4) {
 					if (rawFile.status === 200 || rawFile.status == 0) {
 						var allText = rawFile.responseText;
+						clearLocalStorage();
 						csvToMyArray(allText);
 						document.location.reload(true);
 					}
@@ -377,6 +381,7 @@
 			localStorage.removeItem('csvdata');
 			localStorage.removeItem('tableArray');
 			localStorage.removeItem('greenCheck');
+			cols = [];
 		}
 
 		function inputName() {
@@ -388,7 +393,6 @@
 			let fileReader = new FileReader();
 			fileReader.onload = function (fileLoadedEvent) {
 				let textFromFileLoaded = fileLoadedEvent.target.result;
-				clearLocalStorage();
 				csvToMyArray(textFromFileLoaded);
 				document.location.reload(true);
 			};
@@ -396,6 +400,7 @@
 		}
 
 		function uploadFile(name) {
+			clearLocalStorage();
 			let fileName = (name.value).split("\\");
 			document.getElementById("fileToLoadName").innerHTML = fileName[fileName.length - 1];
 			loadFileAsText();
