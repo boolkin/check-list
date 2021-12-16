@@ -55,12 +55,16 @@
 							value='Входная секция'>
 					</td>
 				</tr>
+				<tr>
+					<td colspan="2">
+						<hr>
+						<div id="colsSelectorBlock" style="max-width:100vw;"></div>
+						<hr>
+						<center><input type='button' class="myButton" onclick='exportToCSV(";")'
+						value='Экспорт результирующей таблицы'></center>
+					</td>
+				</tr>
 			</table>
-			<hr>
-			<div id="colsSelectorBlock"></div>
-			<hr>
-			<center><input type='button' class="myButton" onclick='exportToCSV(";")'
-					value='Экспорт результирующей таблицы'></center>
 		</div>
 	</div>
 	<table id="resultTable" border="1" width="100%" style="font-size:1.2em;"></table>
@@ -115,7 +119,7 @@
 		</table>
 
 	</div>
-
+</body>
 	<script>
 
 		let cols = [];
@@ -397,6 +401,6 @@
 			loadFileAsText();
 		}
 	</script>
-</body>
+
 
 </html>
