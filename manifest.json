@@ -2,7 +2,7 @@
   "display": "fullscreen",
   "name": "Чек-лист",
   "orientation": "any",
-  "short_name": "check-list",
+  "short_name": "Чек-лист",
   "start_url": "./index.html",
   "icons": [
     {
