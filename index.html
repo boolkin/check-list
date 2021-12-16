@@ -161,9 +161,7 @@
 		document.getElementById("inputName").value = localStorage.getItem('YourName');
 
 		if (localStorage.getItem('colsSelected') != null) {
-			console.log("Before" + cols);
 			cols = JSON.parse(localStorage.getItem('colsSelected'));
-			console.log("After" + cols);
 			for (let i = 0; i < cols.length; i++) {
 				document.getElementById(cols[i]).checked = true; // отметить сразу те столбцы что были отмечены
 			}
@@ -222,7 +220,7 @@
 			// добавляем выбор колонок для генерации
 			for (let i = 0; i < tableArray[0].length; i++) {
 				selectCols += "<label for='" + i + "'><input type='checkbox' oninput='colsAdd(this.id)' id='" + i + "'>  " + tableArray[0][i] + "  </label>";
-				if (firstStart) {
+				if (firstStart && i<6) {
 					cols.push(i.toString());
 					localStorage.setItem('colsSelected', JSON.stringify(cols));
 				}
