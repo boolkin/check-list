@@ -69,6 +69,7 @@
 				</tr>
 			</table>
 	</div>
+	<div id="exported"></div>
 	<table id="resultTable" border="1" width="100%" style="font-size:1.2em;"></table>
 	<div id="popupWind" style="display: none; font-size:1.2em;">
 		<div class="myButtonSet" style="z-index: 150;"
@@ -355,7 +356,7 @@
 				var event = document.createEvent('MouseEvents');
 				event.initEvent('click', true, true);
 				pom.dispatchEvent(event);
-				document.getElementById("resultTable").innerHTML = "Успешно экспортировано! <br><input type='button' class='myButton' onclick='document.location.reload(true);' value = 'Я все понял'>";
+				document.getElementById("exported").innerHTML = "Успешно экспортировано! <br><input type='button' class='myButton' onclick='document.location.reload(true);' value = 'Я все понял'>";
 				document.getElementById('sliderCSS').classList.add('closed');
 			} else {
 				pom.click();
