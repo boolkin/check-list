@@ -54,7 +54,8 @@
 						Поиск текста в таблице: <br>
 						<input type="text" id="search"/><br><br>
 						<button class="myButton" onClick="tableGen(); startSearch = 1; searchTextInTable();">Поиск с начала</button>
-						<button class="myButton" onClick="searchTextInTable();">Продолжить поиск</button>
+						<button class="myButton" onClick="searchTextInTable();">Продолжить поиск</button><br><br>
+						<input type = "button" onclick = "updateCacheShow();" value = ".">
 						
 					</td>
 				</tr>
@@ -411,23 +412,7 @@
 			document.getElementById("fileToLoadName").innerHTML = fileName[fileName.length - 1];
 			loadFileAsText();
 		}
-		function searchTextInTable() {
-			let searched = document.getElementById("search").value.toLowerCase();
-			if (searched !== "") {
-				for (let i = startSearch; i<tableArray.length; i++) {
-					let text = document.getElementById("line"+i).innerHTML;
-					let re = new RegExp(searched,"ig"); // search for all instances
-					if (text.match(re)){
-						document.getElementById("line"+i).scrollIntoView();
-						let newText = text.replace(re, `<mark>${searched}</mark>`);
-						document.getElementById("line"+i).innerHTML = newText;
-						startSearch = i+1;
-						document.getElementById('sliderCSS').classList.add('closed');
-						return;
-					}
-				}
-			}
-		}
+
 		function showRowsNumb(){
 			function has(par, ctag) {
 				for (let k = 0; k < par.childNodes.length; ++k)
@@ -449,7 +434,37 @@
 				else if(has(tr, "TH")) add(tr, "TH", "№");
 			}
 		}
+		function updateCacheShow(){		
+			document.getElementById("exported").innerHTML = "Для обновления требуется подключение к инету! <br><input type='button' class='myButton' onclick='updateCache()' value = 'Обновиться'>"
+		}
+		function updateCache(){
+			caches.open('check-list').then(function(cache) {
+			  cache.delete('/check-list/').then(function(response) {
+				someUIUpdateFunction();
+			  });
+			  cache.delete('/check-list/index.html').then(function(response) {
+				someUIUpdateFunction();
+			  });
+			})
+		}
 		
+		function searchTextInTable() {
+			let searched = document.getElementById("search").value.toLowerCase();
+			if (searched !== "") {
+				for (let i = startSearch; i<tableArray.length; i++) {
+					let text = document.getElementById("line"+i).innerHTML;
+					let re = new RegExp(searched,"ig"); // search for all instances
+					if (text.match(re)){
+						document.getElementById("line"+i).scrollIntoView();
+						let newText = text.replace(re, `<mark>${searched}</mark>`);
+						document.getElementById("line"+i).innerHTML = newText;
+						startSearch = i+1;
+						document.getElementById('sliderCSS').classList.add('closed');
+						return;
+					}
+				}
+			}
+		}
 	</script>
 
 
