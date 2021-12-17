@@ -52,6 +52,11 @@
 							onclick="readCSVFile('https://boolkin.github.io/check-list/entry.csv')"
 							value='Входная секция'>
 					</td>
+					<td>
+						<label for='showRowsNumb'><input type='checkbox' oninput='showRowsNumber()' id='showRowsNumb'>
+						Показать номера строк таблицы</label><br><br>
+						
+					</td>
 				</tr>
 				<tr>
 					<td colspan="2">
@@ -149,6 +154,37 @@
 			touchendY = e.changedTouches[0].screenY;
 			handleGesture();
 		});
+		
+		if (document.getElementById('showRowsNumb').checked === true) {
+			console.log("Show raws");
+			showRowsNumber();
+		}
+		function showRowsNumber() {
+			
+			function has(par, ctag) {
+			console.log("par  " + par + "    ctag  "+ ctag);
+				for (let k = 0; k < par.childNodes.length; ++k)
+					if (par.childNodes[k].tagName == ctag) return true;
+			}
+
+			function add(par, ctag, text) {
+			
+				let c = document.createElement(ctag);
+				c.appendChild(document.createTextNode(text));
+				par.insertBefore(c, par.childNodes[0]);
+			}
+			let ts = document.getElementById("resultTable");
+
+			let n = 0, trs = ts.rows, tr;
+			console.log(ts);
+			console.log(trs.length);
+			for (let j = 0; j < trs.length; j++) {
+				tr = trs[j];
+				//console.log
+				if (has(tr, "TD")) add(tr, "TD", ++n);
+				else if(has(tr, "TH")) add(tr, "TH", "№");
+			}
+		}
 
 		if (localStorage.getItem('greenCheck') == "true") {
 			document.getElementById('greenCheck').checked = true;
@@ -403,6 +439,7 @@
 			document.getElementById("fileToLoadName").innerHTML = fileName[fileName.length - 1];
 			loadFileAsText();
 		}
+		
 	</script>
 
 
