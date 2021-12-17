@@ -55,23 +55,26 @@
 						Поиск текста в таблице: <br>
 						<input type="text" id="search"/><br><br>
 						<button class="myButton" onClick="tableGen(); startSearch = 1; searchTextInTable();">Поиск с начала</button>
-						<button class="myButton" onClick="searchTextInTable();">Продолжить поиск</button><br><br>
+						<button class="myButton" onClick="searchTextInTable();">Продолжить поиск</button><br><br><br>
 						<input type = "button" onclick = "updateCacheShow();" value = "Обновиться">
 						
 					</td>
 				</tr>
 				<tr>
-					<td colspan="3">
+					<td colspan="2">
 						<hr>
 						<div id="colsSelectorBlock" style="max-width:100vw;"></div>
 						<hr>
 						<center><input type='button' class="myButton" onclick='exportToCSV(";")'
 						value='Экспорт результирующей таблицы'></center>
 					</td>
+					<td>
+						<div id="exported"></div>
+					</td>
 				</tr>
 			</table>
 	</div>
-	<div id="exported"></div>
+
 	<table id="resultTable" border="1" width="100%" style="font-size:1.2em;"></table>
 	<div id="popupWind" style="display: none; font-size:1.2em;">
 		<div class="myButtonSet" style="z-index: 150;"
@@ -359,7 +362,6 @@
 				event.initEvent('click', true, true);
 				pom.dispatchEvent(event);
 				document.getElementById("exported").innerHTML = "Успешно экспортировано! <br><input type='button' class='myButton' onclick='document.location.reload(true);' value = 'Я все понял'>";
-				document.getElementById('sliderCSS').classList.add('closed');
 			} else {
 				pom.click();
 				
@@ -436,8 +438,7 @@
 			}
 		}
 		function updateCacheShow(){		
-			document.getElementById("exported").innerHTML = "Для обновления требуется подключение к инету! <br><input type='button' class='myButton' onclick='updateCache()' value = 'Обновиться'>"
-			document.getElementById('sliderCSS').classList.add('closed');
+			document.getElementById("exported").innerHTML = "Для обновления требуется подключение к инету! <br><input type='button' class='myButton' onclick='updateCache()' value = 'Обновиться'>";
 		}
 		function updateCache(){
 			caches.open('check-list').then(function(cache) {
