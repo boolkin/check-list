@@ -56,7 +56,7 @@
 						<input type="text" id="search"/><br><br>
 						<button class="myButton" onClick="tableGen(); startSearch = 1; searchTextInTable();">Поиск с начала</button>
 						<button class="myButton" onClick="searchTextInTable();">Продолжить поиск</button><br><br>
-						<input type = "button" onclick = "updateCacheShow();" value = ".">
+						<input type = "button" onclick = "updateCacheShow();" value = "Обновиться">
 						
 					</td>
 				</tr>
@@ -437,6 +437,7 @@
 		}
 		function updateCacheShow(){		
 			document.getElementById("exported").innerHTML = "Для обновления требуется подключение к инету! <br><input type='button' class='myButton' onclick='updateCache()' value = 'Обновиться'>"
+			document.getElementById('sliderCSS').classList.add('closed');
 		}
 		function updateCache(){
 			caches.open('check-list').then(function(cache) {
@@ -447,6 +448,7 @@
 				someUIUpdateFunction();
 			  });
 			})
+			document.location.reload(true);
 		}
 		
 		function searchTextInTable() {
