@@ -8,9 +8,7 @@
 	<link rel="icon" type="image/png" href="favicon.png" />
 	<link rel="manifest" href="./manifest.json" />
 	<style>
-	body {
-	  touch-action: pan-x pan-y;
-	}
+
 	</style>
 	<script>
 		if ("serviceWorker" in navigator) {
@@ -52,14 +50,16 @@
 							onclick="readCSVFile('https://boolkin.github.io/check-list/entry.csv')"
 							value='Входная секция'>
 					</td>
-					<td>
-						<label for='showRowsNumb'><input type='checkbox' oninput='showRowsNumber()' id='showRowsNumb'>
-						Показать номера строк таблицы</label><br><br>
+					<td style="vertical-align: text-top;">
+						Поиск текста в таблице: <br>
+						<input type="text" id="search"/><br><br>
+						<button class="myButton" onClick="tableGen(); startSearch = 1; searchTextInTable();">Поиск с начала</button>
+						<button class="myButton" onClick="searchTextInTable();">Продолжить поиск</button>
 						
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2">
+					<td colspan="3">
 						<hr>
 						<div id="colsSelectorBlock" style="max-width:100vw;"></div>
 						<hr>
@@ -136,7 +136,7 @@
 			minute: 'numeric',
 			second: 'numeric'
 		}
-
+		let startSearch = 1;
 		let touchstartY = 0;
 		let touchendY = 0;
 
@@ -155,37 +155,6 @@
 			handleGesture();
 		});
 		
-		if (document.getElementById('showRowsNumb').checked === true) {
-			console.log("Show raws");
-			showRowsNumber();
-		}
-		function showRowsNumber() {
-			
-			function has(par, ctag) {
-			console.log("par  " + par + "    ctag  "+ ctag);
-				for (let k = 0; k < par.childNodes.length; ++k)
-					if (par.childNodes[k].tagName == ctag) return true;
-			}
-
-			function add(par, ctag, text) {
-			
-				let c = document.createElement(ctag);
-				c.appendChild(document.createTextNode(text));
-				par.insertBefore(c, par.childNodes[0]);
-			}
-			let ts = document.getElementById("resultTable");
-
-			let n = 0, trs = ts.rows, tr;
-			console.log(ts);
-			console.log(trs.length);
-			for (let j = 0; j < trs.length; j++) {
-				tr = trs[j];
-				//console.log
-				if (has(tr, "TD")) add(tr, "TD", ++n);
-				else if(has(tr, "TH")) add(tr, "TH", "№");
-			}
-		}
-
 		if (localStorage.getItem('greenCheck') == "true") {
 			document.getElementById('greenCheck').checked = true;
 		}
@@ -256,7 +225,7 @@
 			// добавляем выбор колонок для генерации
 			for (let i = 0; i < tableArray[0].length; i++) {
 				selectCols += "<label for='" + i + "'><input type='checkbox' oninput='colsAdd(this.id)' id='" + i + "'>  " + tableArray[0][i] + "  </label>";
-				if (firstStart && i<6 && i>0) {
+				if (firstStart && i<5) {
 					cols.push(i.toString());
 					localStorage.setItem('colsSelected', JSON.stringify(cols));
 				}
@@ -315,12 +284,13 @@
 				tableBody += "</tr>";
 			}
 			document.getElementById("resultTable").innerHTML = tableBody;
+			showRowsNumb();
 		}
 		function check(id) {
 			if (id === "line0") return;
 			let check = document.getElementById(id).getElementsByTagName('div')[0];
 			lineNumb = parseInt(id.replace("line", ""));
-			let itemInfo = "";
+			let itemInfo = id;
 			for (let i = 0; i < cols.length; i++) {
 				itemInfo += " - " + tableArray[lineNumb][i];
 			}
@@ -385,7 +355,8 @@
 				var event = document.createEvent('MouseEvents');
 				event.initEvent('click', true, true);
 				pom.dispatchEvent(event);
-				alert("Экпортировано");
+				document.getElementById("resultTable").innerHTML = "Успешно экспортировано! <br><input type='button' class='myButton' onclick='document.location.reload(true);' value = 'Я все понял'>";
+				document.getElementById('sliderCSS').classList.add('closed');
 			} else {
 				pom.click();
 				
@@ -438,6 +409,44 @@
 			let fileName = (name.value).split("\\");
 			document.getElementById("fileToLoadName").innerHTML = fileName[fileName.length - 1];
 			loadFileAsText();
+		}
+		function searchTextInTable() {
+			let searched = document.getElementById("search").value.toLowerCase();
+			if (searched !== "") {
+				for (let i = startSearch; i<tableArray.length; i++) {
+					let text = document.getElementById("line"+i).innerHTML;
+					let re = new RegExp(searched,"ig"); // search for all instances
+					if (text.match(re)){
+						document.getElementById("line"+i).scrollIntoView();
+						let newText = text.replace(re, `<mark>${searched}</mark>`);
+						document.getElementById("line"+i).innerHTML = newText;
+						startSearch = i+1;
+						document.getElementById('sliderCSS').classList.add('closed');
+						return;
+					}
+				}
+			}
+		}
+		function showRowsNumb(){
+			function has(par, ctag) {
+				for (let k = 0; k < par.childNodes.length; ++k)
+					if (par.childNodes[k].tagName == ctag) return true;
+			}
+
+			function add(par, ctag, text) {
+			
+				let c = document.createElement(ctag);
+				c.appendChild(document.createTextNode(text));
+				par.insertBefore(c, par.childNodes[0]);
+			}
+			let ts = document.getElementById("resultTable");
+
+			let n = 0, trs = ts.rows, tr;
+			for (let j = 0; j < trs.length; j++) {
+				tr = trs[j];
+				if (has(tr, "TD")) add(tr, "TD", ++n);
+				else if(has(tr, "TH")) add(tr, "TH", "№");
+			}
 		}
 		
 	</script>
