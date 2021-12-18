@@ -458,13 +458,14 @@
 			searched = document.getElementById("searchWindText").value.toLowerCase();
 			document.getElementById('sliderCSS').classList.add('closed');
 			if (searched !== "") {
-				for (let i = startSearch; i<tableArray.length; i++) {
-					let text = document.getElementById("line"+i).innerHTML;
+				let tableRows = document.getElementById("resultTable").rows;
+				for (let i = startSearch; i<tableRows.length; i++) {
+					let text = tableRows[i].innerHTML;
 					let re = new RegExp(searched,"ig"); // search for all instances
 					if (text.match(re)){
-						document.getElementById("line"+i).scrollIntoView(false);
+						tableRows[i].scrollIntoView(false);
 						let newText = text.replace(re, `<mark>${searched}</mark>`);
-						document.getElementById("line"+i).innerHTML = newText;
+						tableRows[i].innerHTML = newText;
 						startSearch = i+1;						
 						return;
 					}
