@@ -22,10 +22,10 @@
 <body>
 
 	<div class="myButtonSet" onclick="document.getElementById('sliderCSS').classList.toggle('closed');">☰</div>
-
+	<div id = "searchWind" style="position:fixed;overflow-y: hidden;background-color: #1b1a1a; color: #eee;z-index: 250;font-size: 1.1em;"></div>
 	<div class="sliderCSS closed" id="sliderCSS" width="100%">
 			<br>
-			<table style="vertical-align: text-top; width:100%;">
+			<table style="width:100%;">
 				<tr>
 					<td>
 						Импортировать таблицу из текстового поля:</br>
@@ -51,13 +51,10 @@
 							onclick="readCSVFile('https://boolkin.github.io/check-list/entry.csv')"
 							value='Входная секция'>
 					</td>
-					<td style="vertical-align: text-top;">
+					<td>
 						Поиск текста в таблице: <br>
-						<input type="text" id="search"/><br><br>
-						<button class="myButton" onClick="tableGen(); startSearch = 1; searchTextInTable();">Поиск с начала</button>
-						<button class="myButton" onClick="searchTextInTable();">Продолжить поиск</button><br><br><br>
-						<input type = "button" onclick = "updateCacheShow();" value = "Обновиться">
-						
+						<input type="text" id="search"/><br>
+						<button class="myButton" onClick="tableGen(); startSearch = 1; searchTextInTable();">Найти</button>						
 					</td>
 				</tr>
 				<tr>
@@ -69,6 +66,7 @@
 						value='Экспорт результирующей таблицы'></center>
 					</td>
 					<td>
+						<input type = "button" onclick = "updateCacheShow();" value = "Обновиться">
 						<div id="exported"></div>
 					</td>
 				</tr>
@@ -76,6 +74,8 @@
 	</div>
 
 	<table id="resultTable" border="1" width="100%" style="font-size:1.2em;"></table>
+	
+	
 	<div id="popupWind" style="display: none; font-size:1.2em;">
 		<div class="myButtonSet" style="z-index: 150;"
 			onclick='document.getElementById("popupWind").style.display = "none"'>✖</div>
@@ -95,7 +95,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td style="text-align:left;vertical-align: top;">
+				<td style="text-align:left;">
 					<div class="myButton2" onclick='checkNotOK("Поврежден кабель или разъем")'>
 						<div class="myButtonNOK" type='button'>✘</div><span style="padding: 1vw;">Поврежден кабель или
 							разъем</span>
@@ -116,7 +116,7 @@
 					</div>
 
 				</td>
-				<td style="vertical-align: text-top;">
+				<td>
 					<div class="myButtonOK" type='button' onclick='checkOK()'>✔</div><br><br>
 					Или вообще удалить отметку:
 					<hr>
@@ -452,18 +452,20 @@
 			document.location.reload(true);
 		}
 		
-		function searchTextInTable() {
+		function searchTextInTable() {			
 			let searched = document.getElementById("search").value.toLowerCase();
+			if (!document.getElementById("searchWindText") && searched !== "") document.getElementById('searchWind').innerHTML = "<input type='text' id='searchWindText' value = '"+searched+"'/><button class='myButton' onClick='document.getElementById(\"searchWind\").innerHTML = \"\"'>✖</button><br><button class='myButton' onClick='tableGen(); startSearch = 1; searchTextInTable();'>С начала</button><button class='myButton' onClick='searchTextInTable();'>Дальше</button>"
+			searched = document.getElementById("searchWindText").value.toLowerCase();
+			document.getElementById('sliderCSS').classList.add('closed');
 			if (searched !== "") {
 				for (let i = startSearch; i<tableArray.length; i++) {
 					let text = document.getElementById("line"+i).innerHTML;
 					let re = new RegExp(searched,"ig"); // search for all instances
 					if (text.match(re)){
-						document.getElementById("line"+i).scrollIntoView();
+						document.getElementById("line"+i).scrollIntoView(false);
 						let newText = text.replace(re, `<mark>${searched}</mark>`);
 						document.getElementById("line"+i).innerHTML = newText;
-						startSearch = i+1;
-						document.getElementById('sliderCSS').classList.add('closed');
+						startSearch = i+1;						
 						return;
 					}
 				}

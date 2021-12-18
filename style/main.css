@@ -20,6 +20,7 @@ body {
 
 td {
 	padding: 0.5vh;
+	vertical-align: text-top;
 }
 
 .sliderCSS {
