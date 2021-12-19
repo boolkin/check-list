@@ -448,6 +448,9 @@
 			  cache.delete('/check-list/index.html').then(function(response) {
 				someUIUpdateFunction();
 			  });
+			  cache.delete('/check-list/style/main.css').then(function(response) {
+				someUIUpdateFunction();
+			  });
 			})
 			document.location.reload(true);
 		}
