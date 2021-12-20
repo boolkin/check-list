@@ -67,7 +67,7 @@
 					</td>
 					<td>
 						<input type = "button" onclick = "updateCacheShow();" value = "Обновиться">
-						<div id="exported"></div>
+						<div id="updateTextDiv"></div>
 					</td>
 				</tr>
 			</table>
@@ -361,7 +361,7 @@
 				var event = document.createEvent('MouseEvents');
 				event.initEvent('click', true, true);
 				pom.dispatchEvent(event);
-				document.getElementById("exported").innerHTML = "Успешно экспортировано! <br><input type='button' class='myButton' onclick='document.location.reload(true);' value = 'Я все понял'>";
+				document.getElementById("sliderCSS").innerHTML = "Успешно экспортировано! <br><input type='button' class='myButton' onclick='document.location.reload(true);' value = 'Я все понял'>";
 			} else {
 				pom.click();
 				
@@ -438,7 +438,7 @@
 			}
 		}
 		function updateCacheShow(){		
-			document.getElementById("exported").innerHTML = "Для обновления требуется подключение к инету! <br><input type='button' class='myButton' onclick='updateCache()' value = 'Обновиться'>";
+			document.getElementById("updateTextDiv").innerHTML = "Для обновления требуется подключение к инету! <br><input type='button' class='myButton' onclick='updateCache()' value = 'Обновиться'>";
 		}
 		function updateCache(){
 			caches.open('check-list').then(function(cache) {
