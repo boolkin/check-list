@@ -2,10 +2,10 @@ const cacheName = 'check-list';
 const contentToCache = [
   '/check-list/',
   '/check-list/index.html',
-  '/check-list/sw.js',
+  '/check-list/script/sw.js',
   '/check-list/style/main.css',
   '/check-list/manifest.json',
-  '/check-list/images/240x240.png'
+  '/check-list/favicon.png'
 ];
 
 // Install the Service Worker

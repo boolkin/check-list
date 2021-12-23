@@ -6,7 +6,7 @@
   "start_url": "./index.html",
   "icons": [
     {
-      "src": "images/240x240.png",
+      "src": "favicon.png",
       "type": "image/png",
       "sizes": "240x240"
     }
