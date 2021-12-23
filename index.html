@@ -29,7 +29,7 @@
 			<table style="width:100%;">
 				<tr>
 					<td>
-						Импортировать таблицу из текстового поля:</br>
+						Импорт таблицы из текстового поля в формате CSV:</br>
 						<textarea id="csvdata" rows='4' cols='50'></textarea><br>
 						<center><input type='button' onclick='loadCSV()' class="myButton" value='Импортировать'>
 						</center><hr>
@@ -375,8 +375,9 @@
 			let name = localStorage.getItem('YourName');
 			let today = new Date();
 			today = today.toLocaleString("ru", timeOptions);
-			var elt = document.getElementById('resultTable');
-			var wb = XLSX.utils.table_to_book(elt, {sheet:"Sheet JS"});
+			var wb = XLSX.utils.book_new();
+			var ws = XLSX.utils.aoa_to_sheet(tableArray);
+			XLSX.utils.book_append_sheet(wb, ws, "SJS");
 			document.getElementById("sliderCSS").innerHTML = "Успешно экспортировано! <br><input type='button' class='myButton' onclick='document.location.reload(true);' value = 'Я все понял'>";
 			return dl ?
 				XLSX.write(wb, {bookType:type, bookSST:true, type: 'base64'}) :
@@ -521,6 +522,4 @@
 			}
 		}
 	</script>
-
-
 </html>
