@@ -17,23 +17,23 @@
 			});
 		}
 	</script>
-	<script type="text/javascript" src="script/xlsx.full.min.js"></script>
+	<script src="script/xlsx.full.min.js"></script>
 </head>
 
 <body>
 
 	<div class="myButtonSet" onclick="document.getElementById('sliderCSS').classList.toggle('closed');">☰</div>
 	<div id = "searchWind" style="position:fixed;overflow-y: hidden;background-color: #1b1a1a; color: #eee;z-index: 250;font-size: 1.1em;"></div>
-	<div class="sliderCSS closed" id="sliderCSS" width="100%">
+	<div class="sliderCSS closed" id="sliderCSS">
 			<br>
 			<table style="width:100%;">
 				<tr>
 					<td>
-						Импорт таблицы из текстового поля в формате CSV:</br>
+						Импорт таблицы из текстового поля в формате CSV:<br>
 						<textarea id="csvdata" rows='4' cols='50'></textarea><br>
 						<center><input type='button' onclick='loadCSV()' class="myButton" value='Импортировать'>
 						</center><hr>
-						Или загрузить из файла: </br>
+						Или загрузить из файла: <br>
 						<div>
 							<label for="fileToLoad" id="fileToLoadName" class="custom-file-upload">Выбрать CSV/Excel
 								файл</label>
@@ -100,27 +100,27 @@
 				<td></td>
 				<td style="text-align:left;">
 					<div class="myButton2" onclick='checkNotOK("Поврежден кабель или разъем")'>
-						<div class="myButtonNOK" type='button'>✘</div><span style="padding: 1vw;">Поврежден кабель или
+						<div class="myButtonNOK">✘</div><span style="padding: 1vw;">Поврежден кабель или
 							разъем</span>
 					</div><br>
 					<div class="myButton2" onclick='checkNotOK("Поврежден сам датчик")'>
-						<div class="myButtonNOK" type='button'>✘</div><span style="padding: 1vw;">Поврежден сам
+						<div class="myButtonNOK">✘</div><span style="padding: 1vw;">Поврежден сам
 							датчик</span>
 					</div><br>
 					<div class="myButton2" onclick='checkNotOK("Плохо закреплен/повреждено крепление")'>
-						<div class="myButtonNOK" type='button'>✘</div><span style="padding: 1vw;">Плохо
+						<div class="myButtonNOK">✘</div><span style="padding: 1vw;">Плохо
 							закреплен/повреждено крепление</span>
 					</div><br>
 
 					<div class="myButton2">
-						<div class="myButtonNOK" type='button'>✘</div>
+						<div class="myButtonNOK">✘</div>
 						<input type="text" id="noteText" size="27" style="font-size:1.2em;"
 							placeholder="Cвое описание неисправности" onchange="checkNotOK(this.value)">
 					</div>
 
 				</td>
 				<td>
-					<div class="myButtonOK" type='button' onclick='checkOK()'>✔</div><br><br>
+					<div class="myButtonOK" onclick='checkOK()'>✔</div><br><br>
 					Или вообще удалить отметку:
 					<hr>
 					<input class="myButton" type='button' onclick='checkCancel()' value='Убрать отметку'>
