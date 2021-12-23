@@ -5,6 +5,7 @@ const contentToCache = [
   '/check-list/sw.js',
   '/check-list/style/main.css',
   '/check-list/manifest.json',
+  '/check-list/script/xlsx.full.min.js',
   '/check-list/favicon.png'
 ];
 

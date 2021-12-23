@@ -17,6 +17,7 @@
 			});
 		}
 	</script>
+	<script type="text/javascript" src="script/xlsx.full.min.js"></script>
 </head>
 
 <body>
@@ -34,7 +35,7 @@
 						</center><hr>
 						Или загрузить из файла: </br>
 						<div>
-							<label for="fileToLoad" id="fileToLoadName" class="custom-file-upload">Выбрать CSV
+							<label for="fileToLoad" id="fileToLoadName" class="custom-file-upload">Выбрать CSV/Excel
 								файл</label>
 							<input type="file" id="fileToLoad" onchange="uploadFile(this)">
 							<input type='button' onclick='loadFileAsText()' class="myButton" value='Загрузить'>
@@ -62,8 +63,8 @@
 						<hr>
 						<div id="colsSelectorBlock" style="max-width:100vw;"></div>
 						<hr>
-						<center><input type='button' class="myButton" onclick='exportToCSV(";")'
-						value='Экспорт результирующей таблицы'></center>
+						<center><input type="button" class="myButton" onclick="exportToCSV(';')" value='Экспорт в CSV'>
+						<input type='button' class="myButton" onclick="exportToExcel('xlsx')" value='Экспорт в Excel'></center>
 					</td>
 					<td style="text-align:right;">
 						<input type = "button" onclick = "updateCacheShow();" value = "Обновить приложение">
@@ -168,7 +169,7 @@
 		}
 		if (localStorage.getItem('csvdata') !== null) {
 			let csvDataStorage = localStorage.getItem('csvdata');
-			csvToMyArray(csvDataStorage);
+			csvToMyArray(csvDataStorage, ";");
 		}
 
 		document.getElementById("inputName").value = localStorage.getItem('YourName');
@@ -184,7 +185,7 @@
 		function loadCSV() {
 			clearLocalStorage();
 			let csvFromTextArea = document.getElementById('csvdata').value;
-			csvToMyArray(csvFromTextArea);
+			csvToMyArray(csvFromTextArea, ";");
 			document.location.reload(true);
 		}
 
@@ -214,14 +215,14 @@
 			return ret;
 		}
 
-		function csvToMyArray(csv) {
+		function csvToMyArray(csv,sep) {
 			localStorage.setItem('csvdata', csv);
 			let firstStart = false;
 			if (localStorage.getItem('tableArray') !== null) {
 				tableArray = JSON.parse(localStorage.getItem('tableArray'));
 			}
 			else {
-				tableArray = csvToArray(csv, ";");
+				tableArray = csvToArray(csv, sep);
 				if (tableArray[tableArray.length - 1].length != tableArray[tableArray.length - 2].length) tableArray.pop(); // удаляем пустую строку если такая есть
 				firstStart = true;
 			}
@@ -369,6 +370,18 @@
 				
 			}
 		}
+		
+		function exportToExcel (type, fn, dl){
+			let name = localStorage.getItem('YourName');
+			let today = new Date();
+			today = today.toLocaleString("ru", timeOptions);
+			var elt = document.getElementById('resultTable');
+			var wb = XLSX.utils.table_to_book(elt, {sheet:"Sheet JS"});
+			document.getElementById("sliderCSS").innerHTML = "Успешно экспортировано! <br><input type='button' class='myButton' onclick='document.location.reload(true);' value = 'Я все понял'>";
+			return dl ?
+				XLSX.write(wb, {bookType:type, bookSST:true, type: 'base64'}) :
+				XLSX.writeFile(wb, fn || (today + '_(' + name + ').' + (type || 'xlsx')));
+		}
 
 		//from https://stackoverflow.com/questions/14446447/how-to-read-a-local-text-file
 		function readCSVFile(file) {
@@ -380,7 +393,7 @@
 					if (rawFile.status === 200 || rawFile.status == 0) {
 						var allText = rawFile.responseText;
 						clearLocalStorage();
-						csvToMyArray(allText);
+						csvToMyArray(allText, ";");
 						document.location.reload(true);
 					}
 				}
@@ -400,24 +413,54 @@
 			localStorage.setItem('YourName', document.getElementById("inputName").value);
 		}
 
-		function loadFileAsText() {
+		function loadFileAsText(ext) {
 			let fileToLoad = document.getElementById("fileToLoad").files[0];
 			let fileReader = new FileReader();
 			fileReader.onload = function (fileLoadedEvent) {
-				let textFromFileLoaded = fileLoadedEvent.target.result;
-				csvToMyArray(textFromFileLoaded);
+				let contents = fileLoadedEvent.target.result;
+				if (ext===".csv") {
+					csvToMyArray(contents, ";");
+				}
+				else if (ext===".xlsx") {
+					let worksheet = processExcel(contents);
+					csvToMyArray(Object.values(worksheet)[0], ",");
+				}
 				document.location.reload(true);
 			};
-			fileReader.readAsText(fileToLoad, "UTF-8");
+			if (ext === ".csv") fileReader.readAsText(fileToLoad, "UTF-8");
+			else if (ext === ".xlsx") fileReader.readAsBinaryString(fileToLoad);
 		}
-
+		
 		function uploadFile(name) {
 			clearLocalStorage();
 			let fileName = (name.value).split("\\");
-			document.getElementById("fileToLoadName").innerHTML = fileName[fileName.length - 1];
-			loadFileAsText();
+			let fileNameLast = fileName[fileName.length - 1];
+			let extension = fileNameLast.replace(/(.+)(\.[a-z]+)/i,'$2');
+			document.getElementById("fileToLoadName").innerHTML =fileNameLast;
+			loadFileAsText(extension);
+		}
+		
+		function processExcel(data) {
+		   var workbook = XLSX.read(data, {
+			  type: 'binary'
+		   });
+
+		   var firstSheet = workbook.SheetNames[0];
+		   var data = to_csv(workbook);
+		   return data;
 		}
 
+		function to_csv(workbook) {
+		   var result = {};
+		   workbook.SheetNames.forEach(function(sheetName) {
+			  var roa = XLSX.utils.sheet_to_csv(workbook.Sheets[sheetName], {
+				 header: 1
+			  });
+			  if (roa.length) result[sheetName] = roa;
+		   });
+		   return result;
+		}
+		
 		function showRowsNumb(){
 			function has(par, ctag) {
 				for (let k = 0; k < par.childNodes.length; ++k)
