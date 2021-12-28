@@ -116,7 +116,7 @@
 					</div><br>
 
 					<div class="myButton2">
-						<div class="myButtonNOK">✘</div>
+						<div class="myButtonNOK" onclick="checkNotOKrepeat()">✘</div>
 						<input type="text" id="noteText" size="27" style="font-size:1.2em;"
 							placeholder="Cвое описание неисправности" onchange="checkNotOK(this.value)">
 					</div>
@@ -315,7 +315,7 @@
 			}
 			document.getElementById("itemInfo").innerHTML = itemInfo;
 			document.getElementById("popupWind").style.display = "block";
-			document.getElementById("noteText").value = "";
+			//document.getElementById("noteText").value = "";
 			document.getElementById('sliderCSS').classList.add('closed');
 		}
 
@@ -350,6 +350,18 @@
 			tableArray[lineNumb][colsNumb] = today + " (" + name + ")";
 			tableArray[lineNumb][colsNumb + 1] = "✘"
 			tableArray[lineNumb][colsNumb + 2] = str;
+			document.getElementById("popupWind").style.display = "none";
+			tableGen();
+		}
+		
+		function checkNotOKrepeat() {
+			let colsNumb = tableArray[0].length - 3;
+			let today = new Date();
+			today = today.toLocaleString("ru", timeOptions);
+			let name = localStorage.getItem('YourName');
+			tableArray[lineNumb][colsNumb] = today + " (" + name + ")";
+			tableArray[lineNumb][colsNumb + 1] = "✘"
+			tableArray[lineNumb][colsNumb + 2] = document.getElementById('noteText').value;
 			document.getElementById("popupWind").style.display = "none";
 			tableGen();
 		}
