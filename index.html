@@ -387,16 +387,15 @@
 		function exportToExcel (type, fn, dl){
 			let userName = localStorage.getItem('YourName');
 			let wsName = localStorage.getItem('wsName');
-			let fileName = localStorage.getItem('fileName');
 			let today = new Date();
 			today = today.toLocaleString("ru", timeOptions);
 			var wb = XLSX.utils.book_new();
 			var ws = XLSX.utils.aoa_to_sheet(tableArray);
-			XLSX.utils.book_append_sheet(wb, ws, "SJS");
+			XLSX.utils.book_append_sheet(wb, ws, wsName);
 			document.getElementById("sliderCSS").innerHTML = "Успешно экспортировано! <br><input type='button' class='myButton' onclick='document.location.reload(true);' value = 'Я все понял'>";
 			return dl ?
 				XLSX.write(wb, {bookType:type, bookSST:true, type: 'base64'}) :
-				XLSX.writeFile(wb, fn || (fileName + '_'+ wsName + '_' + today + '_(' + userName + ').' + (type || 'xlsx')));
+				XLSX.writeFile(wb, fn || (wsName + '_' + today + '_(' + userName + ').' + (type || 'xlsx')));
 		}
 
 		//from https://stackoverflow.com/questions/14446447/how-to-read-a-local-text-file
@@ -463,7 +462,7 @@
 		function uploadFile(name) {
 			clearLocalStorage();
 			let pathName = (name.value).split("\\");
-			let fileNameLast = pathName[pathName - 1];
+			let fileNameLast = pathName[pathName.length - 1];
 			let extension = fileNameLast.replace(/(.+)(\.[a-z]+)$/i,'$2');
 			let fileName = fileNameLast.replace(/(.+)(\.[a-z]+)$/i,'$1');
 			localStorage.setItem('fileName', fileName);
