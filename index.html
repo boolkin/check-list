@@ -40,8 +40,8 @@
 						<div>
 							<label for="fileToLoad" id="fileToLoadName" class="custom-file-upload">Выбрать CSV/Excel
 								файл</label>
-							<input type="file" id="fileToLoad" onchange="uploadFile(this)">
-							<input type='button' onclick='loadLocalFile()' class="myButton" value='Загрузить'>
+							<input type="file" id="fileToLoad" class="myButton" onchange="uploadFile(this)">
+							
 						</div>
 					</td>
 					<td>
@@ -305,7 +305,7 @@
 			}
 			document.getElementById("resultTable").innerHTML = tableBody;
 			showRowsNumb();
-			resizeCols();
+			//resizeCols();
 		}
 		function check(id) {
 			if (id === "line0") return;
@@ -358,8 +358,9 @@
 
 		function exportToCSV(sep) {
 			let csvString = "";
-			let name = localStorage.getItem('YourName');
+			let userName = localStorage.getItem('YourName');
 			let today = new Date();
+			let fileName = localStorage.getItem('fileName');
 			today = today.toLocaleString("ru", timeOptions);
 			for (let i = 0; i < tableArray.length; i++) {
 				for (let j = 0; j < tableArray[i].length; j++) {
@@ -371,7 +372,7 @@
 			}
 			var pom = document.createElement('a');
 			pom.setAttribute('href', 'data:text/csv;charset=utf-8,' + (csvString));
-			pom.setAttribute('download', today + '_(' + name + ')' + '.csv');
+			pom.setAttribute('download', fileName + '_' + today + '_(' + userName + ')' + '.csv');
 			if (document.createEvent) {
 				var event = document.createEvent('MouseEvents');
 				event.initEvent('click', true, true);
@@ -384,7 +385,9 @@
 		}
 		
 		function exportToExcel (type, fn, dl){
-			let name = localStorage.getItem('YourName');
+			let userName = localStorage.getItem('YourName');
+			let wsName = localStorage.getItem('wsName');
+			let fileName = localStorage.getItem('fileName');
 			let today = new Date();
 			today = today.toLocaleString("ru", timeOptions);
 			var wb = XLSX.utils.book_new();
@@ -393,7 +396,7 @@
 			document.getElementById("sliderCSS").innerHTML = "Успешно экспортировано! <br><input type='button' class='myButton' onclick='document.location.reload(true);' value = 'Я все понял'>";
 			return dl ?
 				XLSX.write(wb, {bookType:type, bookSST:true, type: 'base64'}) :
-				XLSX.writeFile(wb, fn || (today + '_(' + name + ').' + (type || 'xlsx')));
+				XLSX.writeFile(wb, fn || (fileName + '_'+ wsName + '_' + today + '_(' + userName + ').' + (type || 'xlsx')));
 		}
 
 		//from https://stackoverflow.com/questions/14446447/how-to-read-a-local-text-file
@@ -429,6 +432,8 @@
 			localStorage.removeItem('tableArray');
 			localStorage.removeItem('greenCheck');
 			cols = [];
+			localStorage.setItem('wsName', '');
+			localStorage.setItem('fileName', '');
 		}
 
 		function inputName() {
@@ -439,7 +444,7 @@
 			localStorage.setItem('remoteAddress', document.getElementById("remoteAddress").value);
 		}
 
-		function loadLocalFile(ext) {
+		function loadLocalFile(fn,ext) {
 			let fileToLoad = document.getElementById("fileToLoad").files[0];
 			let fileReader = new FileReader();
 			fileReader.onload = function (fileLoadedEvent) {
@@ -457,11 +462,13 @@
 		
 		function uploadFile(name) {
 			clearLocalStorage();
-			let fileName = (name.value).split("\\");
-			let fileNameLast = fileName[fileName.length - 1];
+			let pathName = (name.value).split("\\");
+			let fileNameLast = pathName[pathName - 1];
 			let extension = fileNameLast.replace(/(.+)(\.[a-z]+)$/i,'$2');
+			let fileName = fileNameLast.replace(/(.+)(\.[a-z]+)$/i,'$1');
+			localStorage.setItem('fileName', fileName);
 			document.getElementById("fileToLoadName").innerHTML =fileNameLast;
-			loadLocalFile(extension);
+			loadLocalFile(fileName,extension);
 		}
 		
 		function processExcel(data) {
@@ -476,14 +483,14 @@
 		}
 		
 		function to_csv(wsName) {
-			console.log(wsName);
+			localStorage.setItem('wsName', wsName);
 			var result = {};
 			var roa = XLSX.utils.sheet_to_csv(workbook.Sheets[wsName], {
 				 header: 1
 			  });
-			  if (roa.length) result = roa;
-		   csvToMyArray(result, ",");
-		   document.location.reload(true);
+			if (roa.length) result = roa;
+			csvToMyArray(result, ",");
+			document.location.reload(true);
 		}
 		
 		function showRowsNumb(){
