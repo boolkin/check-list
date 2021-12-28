@@ -386,8 +386,8 @@
 			let userName = localStorage.getItem('YourName');
 			let wsName = localStorage.getItem('wsName');
 			let today = new Date();
-			today = today.toLocaleString("ru", timeOptions);
-			let allChecked = '-Заполнен';
+			today = today.toLocaleString("fr-CA", { year: 'numeric', month: 'numeric',	day: 'numeric'});
+			let allChecked = '_Заполнен_';
 			for (let i=1;i<tableArray.length;i++) {
 				if (tableArray[i][tableArray[i].length-1] == '') allChecked = '';
 			}
@@ -397,7 +397,7 @@
 			document.getElementById("sliderCSS").innerHTML = "Успешно экспортировано! <br><input type='button' class='myButton' onclick='document.location.reload(true);' value = 'Я все понял'>";
 			return dl ?
 				XLSX.write(wb, {bookType:type, bookSST:true, type: 'base64'}) :
-				XLSX.writeFile(wb, fn || (wsName + '_' + today + '_(' + userName + ')'+allChecked+ '.' + (type || 'xlsx')));
+				XLSX.writeFile(wb, fn || (allChecked + wsName + ' (' + userName + ') '+ today + '.' + (type || 'xlsx')));
 		}
 
 		//from https://stackoverflow.com/questions/14446447/how-to-read-a-local-text-file
