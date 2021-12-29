@@ -1,5 +1,5 @@
 {
-  "display": "fullscreen",
+  "display": "standalone",
   "name": "Чек-лист",
   "orientation": "any",
   "short_name": "Чек-лист",
