@@ -18,7 +18,6 @@
 		}
 	</script>
 	<script src="script/xlsx.full.min.js"></script>
-	<script src="script/tableWidthChange.js"></script>
 </head>
 
 <body>
@@ -47,6 +46,7 @@
 						Введите ваше имя: <input type="text" id="inputName" oninput="inputName()"><hr>
 						<label for='greenCheck'><input type='checkbox' oninput='dontShowGreen()' id='greenCheck'>Не
 							показывать зеленые строки</label><br><hr>
+						<label for='darkCheck'><input type='checkbox' oninput='darkModeCheck()' id='darkCheck'>DarkMode</label><br>
 						<div class="showHideDiv" style="display:none">
 							Выбор готовой таблицы:<br>
 							<input type="text" id="remoteAddress" oninput="inputAddress()">
@@ -152,6 +152,9 @@
 		let startSearch = 1;
 		let touchstartY = 0;
 		let touchendY = 0;
+		let colorOK = "lightgreen";
+		let colorNOK = "pink";
+		
 
 		function handleGesture() {
 			if (touchendY + 120 < touchstartY) {
@@ -218,6 +221,22 @@
 				}
 			}
 		}
+		
+		function darkModeCheck(){
+			let checkbox = document.getElementById("darkCheck");
+			if (checkbox.checked === true) {
+					colorOK = "#043b04";
+					colorNOK = "#5c0505";
+					document.getElementById("resultTable").style.color = "white";
+					document.getElementsByTagName("body")[0].style.backgroundColor = "#2a2929";
+					document.getElementById("popupWind").style.backgroundColor = "#2a2929";
+					document.getElementById('sliderCSS').classList.toggle('closed');
+					tableGen();
+				} else {
+					document.location.reload(true);
+				}
+			}
+		
 		//function from https://stackoverflow.com/questions/8493195/how-can-i-parse-a-csv-string-with-javascript-which-contains-comma-in-data
 		function csvToArray(text, sep) {
 			let p = '', row = [''], ret = [row], i = 0, r = 0, s = !0, l;
@@ -298,10 +317,10 @@
 			for (let i = 0; i < tableArray.length; i++) {
 				if (tableArray[i][colsNumb + 2] === "OK") {
 					if (localStorage.getItem('greenCheck') == "true") continue;
-					tableBody += "<tr id='line" + i + "' onclick='check(this.id)' style='background-color:lightgreen;'>";
+					tableBody += "<tr id='line" + i + "' onclick='check(this.id)' style='background-color:"+colorOK+";'>";
 				}
 				else if (tableArray[i][colsNumb + 2] != "" && i != 0) {
-					tableBody += "<tr id='line" + i + "' onclick='check(this.id)' style='background-color:pink;'>";
+					tableBody += "<tr id='line" + i + "' onclick='check(this.id)' style='background-color:"+colorNOK+";'>";
 				}
 				else {
 					tableBody += "<tr id='line" + i + "' onclick='check(this.id)'>";
